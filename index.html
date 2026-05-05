@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExpenseIQ — {{ member }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+    /* Per-member accent color injected from Flask */
+    :root { --member-accent: {{ colors.accent }}; }
+    .sidebar-logo .logo-icon { color: var(--member-accent) !important; }
+    .nav-item.active { background: color-mix(in srgb, var(--member-accent) 15%, transparent) !important; color: var(--member-accent) !important; }
+    .kpi-today::before { background: var(--member-accent) !important; }
+    .balance-value.positive { color: var(--member-accent) !important; }
+    .btn-primary { background: var(--member-accent) !important; color: #000 !important; }
+    .btn-primary:hover { filter: brightness(1.15); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">◈</span>
+    <span class="logo-text">ExpenseIQ</span>
+  </div>
+
+  <!-- Member badge -->
+  <div class="member-badge">
+    <div class="member-badge-avatar">{{ member[0] }}</div>
+    <div class="member-badge-info">
+      <div class="member-badge-name">{{ member }}</div>
+      <div class="member-badge-sub">Personal Finance</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+      <span class="nav-icon">▦</span>
+      <span>Dashboard</span>
+    </a>
+    <a class="nav-item" data-page="add" onclick="navigate('add')">
+      <span class="nav-icon">＋</span>
+      <span>Add Expense</span>
+    </a>
+    <a class="nav-item" data-page="expenses" onclick="navigate('expenses')">
+      <span class="nav-icon">≡</span>
+      <span>All Expenses</span>
+    </a>
+    <a class="nav-item" data-page="analytics" onclick="navigate('analytics')">
+      <span class="nav-icon">◎</span>
+      <span>Analytics</span>
+    </a>
+    <a class="nav-item" data-page="income" onclick="navigate('income')">
+      <span class="nav-icon">↑</span>
+      <span>Add Income</span>
+    </a>
+    <a class="nav-item" data-page="budgets" onclick="navigate('budgets')">
+      <span class="nav-icon">◷</span>
+      <span>Budgets</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span id="themeIcon">☀</span>
+    </button>
+    <a href="/logout" class="export-btn switch-btn" title="Switch Member">⇄ Switch Member</a>
+    <button class="export-btn change-pw-btn" onclick="openChangePw()" title="Change Family Password">🔑 Change Password</button>
+    <a href="/family-logout" class="export-btn logout-btn" title="Full Logout">⏻ Log Out</a>
+    <button class="export-btn" onclick="exportExpensesCSV()" title="Export Expenses CSV">
+      ↓ Export Expenses
+    </button>
+    <button class="export-btn export-btn--income" onclick="exportIncomeCSV()" title="Export Income CSV">
+      ↓ Export Income
+    </button>
+  </div>
+</aside>
+
+<!-- Hamburger for mobile -->
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ═══════════════════════════════ MAIN CONTENT ═══════════════════════════════ -->
+<main class="main" id="main">
+
+  <!-- ── TOAST NOTIFICATIONS ── -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ─────────────── PAGE: DASHBOARD ─────────────── -->
+  <section class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h1 style = "text-align: center;" >Dashboard</h1>
+      <p class="page-sub" id="dashDate" style = "text-align: center;" ></p>
+    </div>
+
+    <!-- ── BALANCE BANNER ── -->
+    <div class="balance-banner" id="balanceBanner">
+      <div class="balance-banner-left">
+        <span class="balance-label">Total Balance</span>
+        <span class="balance-value" id="balanceDisplay">₹0</span>
+      </div>
+      <div class="balance-banner-right">
+        <div class="balance-meta">
+          <span class="bm-item income-dot">↑ Income this month: <strong id="monthIncomeDisplay">₹0</strong></span>
+          <span class="bm-sep">|</span>
+          <span class="bm-item expense-dot">↓ Spent this month: <strong id="monthSpentDisplay">₹0</strong></span>
+        </div>
+        <button class="btn btn-sm-income" onclick="navigate('income')">＋ Add Income</button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-today">
+        <div class="kpi-label">Today</div>
+        <div class="kpi-value" id="kpiToday">₹0</div>
+        <div class="kpi-sub" id="kpiTodayCount">0 expenses</div>
+      </div>
+      <div class="kpi-card kpi-month">
+        <div class="kpi-label">This Month</div>
+        <div class="kpi-value" id="kpiMonth">₹0</div>
+        <div class="kpi-sub">Month total</div>
+      </div>
+      <div class="kpi-card kpi-avg">
+        <div class="kpi-label">Daily Avg</div>
+        <div class="kpi-value" id="kpiAvg">₹0</div>
+        <div class="kpi-sub">Last 30 days</div>
+      </div>
+      <div class="kpi-card kpi-top">
+        <div class="kpi-label">Top Category</div>
+        <div class="kpi-value" id="kpiTopCat">—</div>
+        <div class="kpi-sub" id="kpiTopAmt"></div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3 class="chart-title">Spending Last 30 Days</h3>
+        <div class="chart-wrap">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card chart-card--small">
+        <h3 class="chart-title">Category Split</h3>
+        <div class="chart-wrap chart-wrap--pie">
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div id="pieLegend" class="pie-legend"></div>
+      </div>
+    </div>
+
+    <!-- Recent Expenses -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <h3>Recent Expenses</h3>
+        <a onclick="navigate('expenses')" class="link-btn">View all →</a>
+      </div>
+      <div id="recentList" class="recent-list"></div>
+    </div>
+  </section>
+
+  <!-- ─────────────── PAGE: ADD EXPENSE ─────────────── -->
+  <section class="page" id="page-add">
+    <div class="page-header">
+      <h1 style = "text-align: center;" id="formTitle">Add Expense</h1>
+      <p class="page-sub" style = "text-align: center;">Record every rupee, every reason.</p>
+    </div>
+
+    <div class="form-container">
+      <div class="form-grid">
+        <!-- Title -->
+        <div class="form-group form-group--full">
+          <label>What did you spend on? <span class="req">*</span></label>
+          <input type="text" id="fTitle" placeholder="e.g. Lunch at Saravana Bhavan" autocomplete="off" />
+        </div>
+
+        <!-- Amount + Category -->
+        <div class="form-group">
+          <label>Amount (₹) <span class="req">*</span></label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">₹</span>
+            <input type="number" id="fAmount" placeholder="0.00" min="0" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Category <span class="req">*</span></label>
+          <select id="fCategory">
+            <option value="">— Select —</option>
+            <option value="Food">🍛 Food</option>
+            <option value="Travel">🚌 Travel</option>
+            <option value="Shopping">🛍 Shopping</option>
+            <option value="Bills">⚡ Bills</option>
+            <option value="Health">💊 Health</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Education">📚 Education</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+          <label>Location / Vendor</label>
+          <input type="text" id="fLocation" placeholder="e.g. Trichy, Amazon" autocomplete="off" />
+        </div>
+
+        <!-- Date & Time -->
+        <div class="form-group">
+          <label>Date & Time <span class="req">*</span></label>
+          <input type="datetime-local" id="fDatetime" />
+        </div>
+
+        <!-- Reason -->
+        <div class="form-group form-group--full">
+          <label>Reason / Notes</label>
+          <textarea id="fReason" placeholder="Why did you spend this? Any notes…" rows="3"></textarea>
+        </div>
+      </div>
+
+      <!-- Hidden ID for edit mode -->
+      <input type="hidden" id="fId" value="" />
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="resetForm()">Clear</button>
+        <button class="btn btn-primary" onclick="submitExpense()">
+          <span id="submitBtnText">Save Expense</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Voice placeholder for future -->
+    <div class="voice-placeholder">
+      <span class="voice-icon">🎤</span>
+      <span>Voice input — coming soon</span>
+    </div>
+  </section>
+
+  <!-- ─────────────── PAGE: ALL EXPENSES ─────────────── -->
+  <section class="page" id="page-expenses">
+    <div class="page-header">
+      <h1 style = "text-align: center;">All Expenses</h1>
+      <p class="page-sub" style = "text-align: center;">Filter, search, and manage your spending.</p>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <input type="text" id="filterSearch" placeholder="🔍 Search expenses…" oninput="loadExpenses()" />
+
+      <select id="filterCategory" onchange="loadExpenses()">
+        <option value="all">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Bills">Bills</option>
+        <option value="Health">Health</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Education">Education</option>
+        <option value="Other">Other</option>
+      </select>
+      <label>From</label>
+      <input type="date" id="filterFrom" onchange="loadExpenses()" title="From date" />
+      <label>To</label>
+      <input type="date" id="filterTo" onchange="loadExpenses()" title="To date" />
+
+      <input type="number" id="filterAmtMin" placeholder="₹ Min" oninput="loadExpenses()" style="width:90px" />
+      <input type="number" id="filterAmtMax" placeholder="₹ Max" oninput="loadExpenses()" style="width:90px" />
+
+      <button class="btn btn-ghost" onclick="clearFilters()">Clear</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="expense-table">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th class="align-right">Amount</th>
+            <th class="align-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="expenseTableBody">
+          <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="tableFooter" class="table-footer"></div>
+  </section>
+
+  <!-- ─────────────── PAGE: ANALYTICS ─────────────── -->
+  <section class="page" id="page-analytics">
+    <div class="page-header">
+      <h1 style = "text-align: center;">Analytics</h1>
+      <p class="page-sub" style = "text-align: center;">Understand where your money goes.</p>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card chart-card--wide">
+        <h3 class="chart-title">Monthly Spending Trend</h3>
+        <div class="chart-wrap">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3 class="chart-title">Category Breakdown (Month)</h3>
+        <div class="chart-wrap">
+          <canvas id="categoryBarChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card chart-card--small">
+        <h3 class="chart-title">Quick Stats</h3>
+        <div id="quickStats" class="quick-stats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── PAGE: BUDGETS ─────────────── -->
+  <section class="page" id="page-budgets">
+    <div class="page-header">
+      <h1 style = "text-align: center;">Budget Limits</h1>
+      <p class="page-sub" style = "text-align: center;">Set monthly limits per category and get alerts when close.</p>
+    </div>
+
+    <!-- Set Budget Form -->
+    <div class="form-container form-container--compact">
+      <div class="form-grid form-grid--2">
+        <div class="form-group">
+          <label>Category</label>
+          <select id="bCategory">
+            <option value="Food">🍛 Food</option>
+            <option value="Travel">🚌 Travel</option>
+            <option value="Shopping">🛍 Shopping</option>
+            <option value="Bills">⚡ Bills</option>
+            <option value="Health">💊 Health</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Education">📚 Education</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Monthly Limit (₹)</label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">₹</span>
+            <input type="number" id="bLimit" placeholder="e.g. 5000" min="1" />
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveBudget()">Set Budget</button>
+    </div>
+
+    <!-- Budget Progress Cards -->
+    <div id="budgetCards" class="budget-cards"></div>
+  </section>
+
+  <!-- ─────────────── PAGE: INCOME ─────────────── -->
+  <section class="page" id="page-income">
+    <div class="page-header">
+      <h1 style = "text-align: center;">Add Income</h1>
+      <p class="page-sub" style = "text-align: center;">Record money received — salary, freelance, gifts, and more.</p>
+    </div>
+
+    <!-- Balance mini-banner on income page -->
+    <div class="balance-banner balance-banner--compact" id="incomeBanner">
+      <span class="balance-label">Current Balance</span>
+      <span class="balance-value" id="incomePageBalance">₹0</span>
+    </div>
+
+    <!-- Add Income Form -->
+    <div class="form-container" style="max-width:620px; margin-bottom:32px">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Amount (₹) <span class="req">*</span></label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">₹</span>
+            <input type="number" id="iAmount" placeholder="0.00" min="0.01" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Date <span class="req">*</span></label>
+          <input type="date" id="iDate" />
+        </div>
+
+        <div class="form-group">
+          <label>Source</label>
+          <select id="iSource">
+            <option value="">— Select Source —</option>
+            <option value="Salary">💼 Salary</option>
+            <option value="Freelance">💻 Freelance</option>
+            <option value="Business">🏪 Business</option>
+            <option value="Investment">📈 Investment</option>
+            <option value="Gift">🎁 Gift</option>
+            <option value="Refund">↩ Refund</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Note</label>
+          <input type="text" id="iNote" placeholder="e.g. April salary, Project X payment" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="resetIncomeForm()">Clear</button>
+        <button class="btn btn-income" onclick="submitIncome()">＋ Add to Balance</button>
+      </div>
+    </div>
+
+    <!-- Income History Table -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <h3>Income History</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span id="incomeTotalBadge" class="total-badge"></span>
+          <button class="btn-export-inline" onclick="exportIncomeCSV()" title="Download income as CSV">↓ Export CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap" style="border:none">
+        <table class="expense-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Source</th>
+              <th>Note</th>
+              <th class="align-right">Amount</th>
+              <th class="align-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="incomeTableBody">
+            <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════ DELETE CONFIRM MODAL ═══════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Delete Expense?</h3>
+    <p>This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
+
+<!-- ══════════════ CHANGE PASSWORD MODAL ══════════════ -->
+<div class="modal-overlay" id="changePwOverlay">
+  <div class="modal modal--pw">
+    <div class="modal-pw-icon">🔑</div>
+    <h3>Change Family Password</h3>
+    <p>This password is shared by all family members.</p>
+
+    <div class="pw-error-msg" id="pwErrorMsg"></div>
+    <div class="pw-success-msg" id="pwSuccessMsg"></div>
+
+    <div class="form-group" style="margin-top:20px">
+      <label class="pw-label">Current Password</label>
+      <input type="password" id="cpCurrent" class="pw-field" placeholder="Current password" />
+    </div>
+    <div class="form-group">
+      <label class="pw-label">New Password</label>
+      <input type="password" id="cpNew" class="pw-field" placeholder="Min 4 characters" />
+    </div>
+    <div class="form-group">
+      <label class="pw-label">Confirm New Password</label>
+      <input type="password" id="cpConfirm" class="pw-field" placeholder="Re-enter new password" />
+    </div>
+
+    <div class="modal-actions" style="margin-top:24px">
+      <button class="btn btn-ghost" onclick="closeChangePw()">Cancel</button>
+      <button class="btn btn-primary" id="savePwBtn" onclick="submitChangePw()">Update Password</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Change Password Modal ──
+function openChangePw() {
+  document.getElementById('changePwOverlay').classList.add('open');
+  document.getElementById('cpCurrent').value = '';
+  document.getElementById('cpNew').value = '';
+  document.getElementById('cpConfirm').value = '';
+  document.getElementById('pwErrorMsg').style.display = 'none';
+  document.getElementById('pwSuccessMsg').style.display = 'none';
+  setTimeout(() => document.getElementById('cpCurrent').focus(), 120);
+}
+
+function closeChangePw() {
+  document.getElementById('changePwOverlay').classList.remove('open');
+}
+
+async function submitChangePw() {
+  const current = document.getElementById('cpCurrent').value.trim();
+  const newPw   = document.getElementById('cpNew').value.trim();
+  const confirm = document.getElementById('cpConfirm').value.trim();
+  const errEl   = document.getElementById('pwErrorMsg');
+  const okEl    = document.getElementById('pwSuccessMsg');
+  const btn     = document.getElementById('savePwBtn');
+
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  if (!current || !newPw || !confirm) {
+    showPwError('All fields are required.'); return;
+  }
+  if (newPw !== confirm) {
+    showPwError('New passwords do not match.'); return;
+  }
+  if (newPw.length < 4) {
+    showPwError('New password must be at least 4 characters.'); return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try {
+    const res = await fetch('/api/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        current_password: current,
+        new_password:     newPw,
+        confirm_password: confirm
+      })
+    });
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      okEl.textContent = '✓ ' + data.message;
+      okEl.style.display = 'block';
+      document.getElementById('cpCurrent').value = '';
+      document.getElementById('cpNew').value = '';
+      document.getElementById('cpConfirm').value = '';
+      setTimeout(() => closeChangePw(), 1800);
+    } else {
+      showPwError(data.error || 'Something went wrong.');
+    }
+  } catch (e) {
+    showPwError('Connection error.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Update Password';
+}
+
+function showPwError(msg) {
+  const el = document.getElementById('pwErrorMsg');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+
+// Close on overlay click
+document.getElementById('changePwOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeChangePw();
+});
+</script>

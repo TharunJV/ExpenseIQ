@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ExpenseIQ — Family Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #080c18;
+      --bg2:     #0e1428;
+      --bg3:     #141c35;
+      --bg4:     #1a2340;
+      --border:  #1e2a4a;
+      --border2: #2a3a60;
+      --text:    #e8eaf2;
+      --text2:   #7a85a3;
+      --text3:   #3d4a6b;
+      --accent:  #5c9eff;
+      --green:   #4cef88;
+      --red:     #e05c5c;
+      --radius:  14px;
+      --trans:   all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(92,158,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(92,158,255,0.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      pointer-events: none;
+    }
+
+    /* Central radial glow */
+    .bg-glow {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle,
+        rgba(92,158,255,0.07) 0%,
+        rgba(76,239,136,0.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translate(-50%,-50%) scale(1);   opacity: 1;   }
+      50%       { transform: translate(-50%,-50%) scale(1.1); opacity: 0.7; }
+    }
+
+    /* ── Login card ── */
+    .login-card {
+      position: relative;
+      z-index: 1;
+      width: min(420px, 92vw);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 44px 40px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(92,158,255,0.05);
+      animation: slideUp 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Top logo */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      justify-content: center;
+    }
+
+    .logo-diamond {
+      font-size: 22px;
+      background: linear-gradient(135deg, #5c9eff, #4cef88);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* Heading */
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .card-sub {
+      font-size: 13.5px;
+      color: var(--text2);
+      text-align: center;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    /* Lock icon */
+    .lock-icon {
+      width: 64px; height: 64px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lock-icon::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(92,158,255,0.15), transparent);
+    }
+
+    /* Form elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text3);
+      font-size: 16px;
+      pointer-events: none;
+      transition: var(--trans);
+    }
+
+    .pw-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      padding: 13px 48px 13px 42px;
+      outline: none;
+      transition: var(--trans);
+    }
+
+    .pw-input:focus {
+      border-color: var(--accent);
+      background: var(--bg4);
+      box-shadow: 0 0 0 3px rgba(92,158,255,0.12);
+    }
+
+    .pw-input:focus + .input-icon,
+    .input-wrap:focus-within .input-icon { color: var(--accent); }
+
+    /* Show/hide toggle */
+    .toggle-pw {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      transition: var(--trans);
+      line-height: 1;
+    }
+
+    .toggle-pw:hover { color: var(--text2); }
+
+    /* Error message */
+    .error-msg {
+      background: rgba(224,92,92,0.1);
+      border: 1px solid rgba(224,92,92,0.3);
+      border-radius: 8px;
+      color: #e07070;
+      font-size: 13px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      display: none;
+      animation: shake 0.4s ease;
+    }
+
+    .error-msg.show { display: block; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-6px); }
+      40%     { transform: translateX(6px); }
+      60%     { transform: translateX(-4px); }
+      80%     { transform: translateX(4px); }
+    }
+
+    /* Submit button */
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #5c9eff, #4c7fff);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 14px;
+      cursor: pointer;
+      transition: var(--trans);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(92,158,255,0.35); }
+    .login-btn:active { transform: translateY(0); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Loading spinner inside button */
+    .btn-text { transition: opacity 0.2s; }
+    .btn-spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Member avatars row (decorative) */
+    .members-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: -8px;
+      margin-bottom: 28px;
+    }
+
+    .member-av {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px; font-weight: 800;
+      border: 2px solid var(--bg2);
+      margin-left: -8px;
+    }
+
+    .member-av:first-child { margin-left: 0; }
+
+    .av-V { background: rgba(92,158,255,0.2);  color: #5c9eff; }
+    .av-P { background: rgba(76,239,136,0.2);  color: #4cef88; }
+    .av-T { background: rgba(240,165,0,0.2);   color: #f0a500; }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh); opacity: 0; }
+      10%  { opacity: 0.35; }
+      90%  { opacity: 0.35; }
+      100% { transform: translateY(-40px); opacity: 0; }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .login-card { padding: 32px 24px; }
+      .card-title { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="login-card">
+
+  <!-- Logo -->
+  <div class="logo-row">
+    <span class="logo-diamond">◈</span>
+    <span class="logo-text">ExpenseIQ</span>
+  </div>
+
+  <!-- Member avatars (decorative) -->
+  <div class="members-row">
+    <div class="member-av av-V">V</div>
+    <div class="member-av av-P">P</div>
+    <div class="member-av av-T">T</div>
+  </div>
+
+  <!-- Lock icon -->
+  <div class="lock-icon">🔐</div>
+
+  <h1 class="card-title">Family Login</h1>
+  <p class="card-sub">Enter the shared family password<br>to access the dashboard.</p>
+
+  <!-- Error -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- Password field -->
+  <div class="form-group">
+    <label class="form-label" for="pwInput">Family Password</label>
+    <div class="input-wrap">
+      <span class="input-icon" style="left:14px">🔑</span>
+      <input
+        type="password"
+        id="pwInput"
+        class="pw-input"
+        placeholder="Enter password…"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') doLogin()"
+      />
+      <button class="toggle-pw" type="button" onclick="toggleVisibility()" id="toggleBtn" title="Show/hide password">👁</button>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <button class="login-btn" id="loginBtn" onclick="doLogin()">
+    <span class="btn-text" id="btnText">Enter Family Dashboard →</span>
+    <div class="btn-spinner" id="btnSpinner"></div>
+  </button>
+
+</div>
+
+<script>
+  // ── Spawn particles ──
+  const pColors = ['#5c9eff','#4cef88','#f0a500','#9b7eff'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const sz = 2 + Math.random() * 3;
+    p.style.cssText = `
+      left:${Math.random()*100}vw;
+      width:${sz}px; height:${sz}px;
+      background:${pColors[i%pColors.length]};
+      animation-duration:${9+Math.random()*14}s;
+      animation-delay:${-Math.random()*20}s;
+    `;
+    document.body.appendChild(p);
+  }
+
+  // ── Show/hide password ──
+  let visible = false;
+  function toggleVisibility() {
+    visible = !visible;
+    document.getElementById('pwInput').type = visible ? 'text' : 'password';
+    document.getElementById('toggleBtn').textContent = visible ? '🙈' : '👁';
+  }
+
+  // ── Login ──
+  async function doLogin() {
+    const pw  = document.getElementById('pwInput').value.trim();
+    const btn = document.getElementById('loginBtn');
+    const txt = document.getElementById('btnText');
+    const spn = document.getElementById('btnSpinner');
+    const err = document.getElementById('errorMsg');
+
+    err.classList.remove('show');
+    if (!pw) { showError('Please enter the family password.'); return; }
+
+    // Loading state
+    btn.disabled = true;
+    txt.style.display = 'none';
+    spn.style.display = 'block';
+
+    try {
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Brief success flash before redirect
+        btn.style.background = 'linear-gradient(135deg, #4cef88, #2dd470)';
+        txt.textContent = '✓ Verified!';
+        txt.style.display = 'block';
+        spn.style.display = 'none';
+        setTimeout(() => { window.location.href = '/family'; }, 600);
+      } else {
+        showError(data.error || 'Incorrect password. Try again.');
+        reset();
+      }
+    } catch (e) {
+      showError('Connection error. Make sure the server is running.');
+      reset();
+    }
+
+    function reset() {
+      btn.disabled = false;
+      txt.style.display = 'block';
+      spn.style.display = 'none';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwInput').focus();
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = '⚠ ' + msg;
+    el.classList.add('show');
+    // Remove and re-add to retrigger shake animation
+    el.style.animation = 'none';
+    el.offsetHeight; // reflow
+    el.style.animation = '';
+  }
+
+  // Auto-focus password field
+  window.onload = () => document.getElementById('pwInput').focus();
+</script>
+</body>
+</html>

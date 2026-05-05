@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ExpenseIQ — Family</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #080c18;
+      --bg2:    #0e1428;
+      --bg3:    #141c35;
+      --border: #1e2a4a;
+      --text:   #e8eaf2;
+      --text2:  #7a85a3;
+      --text3:  #3d4a6b;
+    }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(92,158,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(92,158,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Radial glow center */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(92,158,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text2);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .logo-diamond {
+      font-size: 16px;
+      color: #5c9eff;
+    }
+
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+      background: linear-gradient(135deg, #5c9eff 0%, #4cef88 40%, #f0a500 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: var(--text2);
+      font-size: 15px;
+      margin-top: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Member cards grid */
+    .members-grid {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .member-card {
+      width: 280px;
+      height: 200px;
+      background: var(--bg2);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Glow overlay on hover */
+    .member-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      border-radius: 20px;
+    }
+
+    .member-card:hover::before { opacity: 1; }
+
+    /* Corner diamond accent */
+    .member-card::after {
+      content: '◈';
+      position: absolute;
+      top: 16px;
+      left: 18px;
+      font-size: 18px;
+      opacity: 0.5;
+      transition: all 0.35s ease;
+    }
+
+    .member-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: transparent;
+    }
+
+    .member-card:hover::after {
+      opacity: 1;
+      transform: rotate(15deg);
+    }
+
+    /* Active press feedback */
+    .member-card:active {
+      transform: translateY(-4px) scale(0.99);
+    }
+
+    /* Member avatar circle */
+    .member-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      transition: transform 0.35s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .member-card:hover .member-avatar {
+      transform: scale(1.12);
+    }
+
+    .member-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      position: relative;
+      z-index: 1;
+      transition: color 0.3s ease;
+    }
+
+    .member-hint {
+      font-size: 12px;
+      color: var(--text3);
+      position: relative;
+      z-index: 1;
+      transition: color 0.3s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .member-card:hover .member-hint {
+      color: var(--text2);
+    }
+
+    /* ─── Per-member color themes ─── */
+
+    /* Vijay — blue */
+    .card-Vijay::before    { background: radial-gradient(circle at center, rgba(92,158,255,0.12), transparent 70%); }
+    .card-Vijay::after     { color: #5c9eff; }
+    .card-Vijay:hover      { box-shadow: 0 20px 60px rgba(92,158,255,0.2), 0 0 0 1px rgba(92,158,255,0.3); }
+    .avatar-Vijay          { background: rgba(92,158,255,0.15); color: #5c9eff; }
+    .name-Vijay            { color: #5c9eff; }
+
+    /* Prasanna — green */
+    .card-Prasanna::before { background: radial-gradient(circle at center, rgba(76,239,136,0.12), transparent 70%); }
+    .card-Prasanna::after  { color: #4cef88; }
+    .card-Prasanna:hover   { box-shadow: 0 20px 60px rgba(76,239,136,0.2), 0 0 0 1px rgba(76,239,136,0.3); }
+    .avatar-Prasanna       { background: rgba(76,239,136,0.15); color: #4cef88; }
+    .name-Prasanna         { color: #4cef88; }
+
+    /* Tharun — amber */
+    .card-Tharun::before   { background: radial-gradient(circle at center, rgba(240,165,0,0.12), transparent 70%); }
+    .card-Tharun::after    { color: #f0a500; }
+    .card-Tharun:hover     { box-shadow: 0 20px 60px rgba(240,165,0,0.2), 0 0 0 1px rgba(240,165,0,0.3); }
+    .avatar-Tharun         { background: rgba(240,165,0,0.15); color: #f0a500; }
+    .name-Tharun           { color: #f0a500; }
+
+    /* Footer */
+    .page-footer {
+      position: fixed;
+      bottom: 28px;
+      color: var(--text3);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      z-index: 1;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float linear infinite;
+      opacity: 0.4;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10%  { opacity: 0.4; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-20px) translateX(30px); opacity: 0; }
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      .members-grid { flex-direction: column; align-items: center; }
+      .member-card  { width: min(280px, 90vw); }
+      .header h1    { font-size: 36px; }
+      .header       { margin-bottom: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-logo">
+      <span class="logo-diamond">◈</span>
+      <span>ExpenseIQ</span>
+    </div>
+    <h1>Family Management</h1>
+    <p>Select a member to view their finances</p>
+  </div>
+
+  <div class="members-grid">
+    {% for member in members %}
+    <a class="member-card card-{{ member.name }}" href="/select/{{ member.name }}">
+      <div class="member-avatar avatar-{{ member.name }}">
+        {{ member.name[0] }}
+      </div>
+      <div class="member-name name-{{ member.name }}">{{ member.name }}</div>
+      <div class="member-hint">Tap to open dashboard →</div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="page-footer" style="display:flex;gap:16px;align-items:center">
+    <span>ExpenseIQ Family Edition · {{ members|length }} members</span>
+    <a href="/family-logout" style="color:#3d4a6b;text-decoration:none;font-size:12px;transition:color 0.2s"
+       onmouseover="this.style.color='#e05c5c'" onmouseout="this.style.color='#3d4a6b'">⏻ Log Out</a>
+  </div>
+
+  <script>
+    // Spawn floating particles for ambiance
+    const colors = ['#5c9eff','#4cef88','#f0a500','#9b7eff'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        background: ${colors[i % colors.length]};
+        animation-duration: ${8 + Math.random() * 12}s;
+        animation-delay: ${-Math.random() * 20}s;
+        width: ${2 + Math.random() * 3}px;
+        height: ${2 + Math.random() * 3}px;
+      `;
+      document.body.appendChild(p);
+    }
+  </script>
+</body>
+</html>
