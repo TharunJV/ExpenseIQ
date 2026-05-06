@@ -11,7 +11,6 @@ import mysql.connector
 from mysql.connector import pooling
 import csv, io, decimal, hashlib
 from datetime import datetime, date
-import os
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")   # change in production
@@ -20,6 +19,7 @@ CORS(app)
 # ─────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────
+import os
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
