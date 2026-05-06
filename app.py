@@ -14,7 +14,7 @@ from datetime import datetime, date
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")   # change in production
+app.secret_key = "78e03b5f34266d7d278fbe719613818a2c90f6cb26603c5d6f7000ccba112fc5"   # change in production
 CORS(app)
 
 # ─────────────────────────────────────────
