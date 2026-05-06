@@ -42,6 +42,16 @@ MEMBER_COLORS = {
 # CONNECTION POOL
 # ─────────────────────────────────────────
 
+@app.route("/debug-env")
+def debug_env():
+    return jsonify({
+        "MYSQLHOST":     os.getenv("MYSQLHOST", "NOT SET"),
+        "MYSQLUSER":     os.getenv("MYSQLUSER", "NOT SET"),
+        "MYSQLDATABASE": os.getenv("MYSQLDATABASE", "NOT SET"),
+        "MYSQLPORT":     os.getenv("MYSQLPORT", "NOT SET"),
+        "MYSQLPASSWORD": "SET" if os.getenv("MYSQLPASSWORD") else "NOT SET",
+    })
+    
 def get_db():
     """
     Create a fresh connection each request.
