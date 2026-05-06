@@ -8,7 +8,6 @@ Members are stored in the DB — add/remove from the MEMBERS list below.
 from flask import Flask, render_template, request, jsonify, Response, session, redirect, url_for
 from flask_cors import CORS
 import mysql.connector
-from mysql.connector import pooling
 import csv, io, decimal, hashlib
 from datetime import datetime, date
 import os
@@ -43,20 +42,21 @@ MEMBER_COLORS = {
 # CONNECTION POOL
 # ─────────────────────────────────────────
 
-_pool = None
-
-def get_pool():
-    global _pool
-    if _pool is None:
-        _pool = pooling.MySQLConnectionPool(
-            pool_name="expenseiq_family_pool",
-            pool_size=10,
-            **DB_CONFIG
-        )
-    return _pool
-
 def get_db():
-    return get_pool().get_connection()
+    """
+    Create a fresh connection each request.
+    Works reliably on Railway + Render with SSL.
+    """
+    config = {
+        "host":            os.getenv("MYSQLHOST"),
+        "user":            os.getenv("MYSQLUSER"),
+        "password":        os.getenv("MYSQLPASSWORD"),
+        "database":        os.getenv("MYSQLDATABASE"),
+        "port":            int(os.getenv("MYSQLPORT", 3306)),
+        "ssl_disabled":    False,
+        "connect_timeout": 10,
+    }
+    return mysql.connector.connect(**config)
 
 def query(conn, sql, params=None, fetch="all"):
     cur = conn.cursor(dictionary=True)
@@ -92,7 +92,13 @@ def init_db():
     Every table has a `member` column so all family data lives in one DB
     but is completely isolated per member.
     """
-    cfg = {k: v for k, v in DB_CONFIG.items() if k != "database"}
+    cfg = {
+    "host":         os.getenv("MYSQLHOST"),
+    "user":         os.getenv("MYSQLUSER"),
+    "password":     os.getenv("MYSQLPASSWORD"),
+    "port":         int(os.getenv("MYSQLPORT", 3306)),
+    "ssl_disabled": False,
+    }
     conn = mysql.connector.connect(**cfg)
     cur = conn.cursor()
 
