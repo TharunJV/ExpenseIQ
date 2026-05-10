@@ -20,14 +20,6 @@ CORS(app)
 # CONFIG
 # ─────────────────────────────────────────
 
-DB_CONFIG = {
-    "host": os.getenv("MYSQLHOST"),
-    "user": os.getenv("MYSQLUSER"),
-    "password": os.getenv("MYSQLPASSWORD"),
-    "database": os.getenv("MYSQLDATABASE"),
-    "port": int(os.getenv("MYSQLPORT"))
-}
-
 # Family members — edit names here to add/remove members
 MEMBERS = ["Vijay", "Prasanna", "Tharun"]
 
@@ -107,25 +99,11 @@ def safe(data):
 
 def init_db():
     """
-    Create database + tables.
-    Every table has a `member` column so all family data lives in one DB
-    but is completely isolated per member.
+    Create tables inside Railway's existing database.
+    DO NOT create database — Railway already provides it.
     """
-    cfg = {
-    "host":         os.getenv("MYSQLHOST"),
-    "user":         os.getenv("MYSQLUSER"),
-    "password":     os.getenv("MYSQLPASSWORD"),
-    "port":         int(os.getenv("MYSQLPORT", 3306)),
-    "ssl_disabled": False,
-    }
-    conn = mysql.connector.connect(**cfg)
+    conn = get_db()
     cur = conn.cursor()
-
-    cur.execute(
-        f"CREATE DATABASE IF NOT EXISTS `{DB_CONFIG['database']}` "
-        f"CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-    )
-    cur.execute(f"USE `{DB_CONFIG['database']}`")
 
     # members registry
     cur.execute("""
@@ -333,10 +311,12 @@ def do_login():
     pw   = (data or {}).get("password", "")
     if not pw:
         return jsonify({"error": "Password is required"}), 400
-
-    conn = get_db()
-    ok   = check_family_password(conn, pw)
-    conn.close()
+    try:
+        conn = get_db()
+        ok   = check_family_password(conn, pw)
+        conn.close()
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     if ok:
         session["family_auth"] = True
@@ -814,7 +794,14 @@ def check_budget_alert(conn, member, category):
 # RUN
 # ─────────────────────────────────────────
 
-if __name__ == "__main__":
+# Run init_db when gunicorn loads this file on Render
+import traceback
+try:
     init_db()
-    print("🚀 ExpenseIQ Family running at http://localhost:5000")
-    app.run(debug=True, port=5000)
+    print("✅ init_db completed successfully")
+except Exception as e:
+    print(f"⚠️ init_db failed at startup:")
+    traceback.print_exc()
+
+if __name__ == "__main__":
+    app.run(debug=False, port=5000)
