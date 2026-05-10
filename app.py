@@ -51,7 +51,16 @@ def debug_env():
         "MYSQLPORT":     os.getenv("MYSQLPORT", "NOT SET"),
         "MYSQLPASSWORD": "SET" if os.getenv("MYSQLPASSWORD") else "NOT SET",
     })
-    
+
+@app.route("/init-db-now")
+def init_db_now():
+    """Temporary route to manually create all tables. Remove after use."""
+    try:
+        init_db()
+        return jsonify({"success": True, "message": "All tables created successfully!"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
 def get_db():
     """
     Create a fresh connection each request.
