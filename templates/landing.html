@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ExpenseIQ — Smart Family Finance Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* ══════════════════════════════════════
+       LANDING PAGE — White & Orange Theme
+       ══════════════════════════════════════ */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --orange:      #f0a500;
+      --orange2:     #e8920a;
+      --orange-lt:   #fff7e6;
+      --orange-mid:  #fff0cc;
+      --white:       #ffffff;
+      --off-white:   #fafaf8;
+      --gray-50:     #f5f5f0;
+      --gray-100:    #ebebeb;
+      --gray-200:    #d4d4d4;
+      --text:        #111111;
+      --text2:       #555555;
+      --text3:       #888888;
+      --dark:        #0d0e12;
+      --dark2:       #13151c;
+      --radius:      16px;
+      --radius-lg:   24px;
+      --shadow:      0 4px 32px rgba(0,0,0,0.08);
+      --shadow-lg:   0 20px 60px rgba(0,0,0,0.12);
+      --trans:       all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--white);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ────────────────────────────────────
+       NAVBAR
+    ──────────────────────────────────── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      height: 68px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--gray-100);
+      transition: var(--trans);
+    }
+
+    .navbar.scrolled {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--orange);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .nav-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .nav-logo-text span { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--orange); }
+
+    /* ── TOP RIGHT: Login button ── */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav-login {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 9px 22px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: var(--trans);
+      letter-spacing: 0.02em;
+    }
+
+    .btn-nav-login:hover {
+      background: var(--orange2);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(240,165,0,0.35);
+    }
+
+    /* Future Google login button (hidden for now, ready to activate) */
+    .btn-nav-google {
+      display: none; /* show when Google auth is ready */
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--gray-200);
+      cursor: pointer;
+      transition: var(--trans);
+    }
+
+    .btn-nav-google:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-200);
+    }
+
+    /* Mobile hamburger */
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text);
+      padding: 4px;
+    }
+
+    /* ────────────────────────────────────
+       HERO SECTION
+    ──────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 5% 60px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(160deg, #fff 0%, var(--orange-lt) 60%, #fff5d6 100%);
+    }
+
+    /* Large decorative circle */
+    .hero-circle {
+      position: absolute;
+      right: -200px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(240,165,0,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Dot grid */
+    .hero-dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(240,165,0,0.15) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 80% 80% at 80% 50%, black 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(240,165,0,0.12);
+      border: 1px solid rgba(240,165,0,0.3);
+      color: var(--orange2);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(40px, 5vw, 68px);
+      font-weight: 800;
+      letter-spacing: -2.5px;
+      line-height: 1.0;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .hero-title .highlight {
+      color: var(--orange);
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Underline squiggle on highlighted word */
+    .hero-title .highlight::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 4px;
+      background: var(--orange);
+      border-radius: 2px;
+      opacity: 0.4;
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--orange);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: var(--trans);
+      box-shadow: 0 8px 32px rgba(240,165,0,0.35);
+    }
+
+    .btn-hero-primary:hover {
+      background: var(--orange2);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(240,165,0,0.4);
+    }
+
+    .btn-hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 24px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      border: 1.5px solid var(--gray-200);
+      transition: var(--trans);
+    }
+
+    .btn-hero-secondary:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: var(--orange-lt);
+    }
+
+    /* Future Google sign-in (hidden, ready for implementation) */
+    .btn-google-future {
+      display: none; /* activate when Google OAuth is ready */
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px 24px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--gray-200);
+      cursor: pointer;
+      transition: var(--trans);
+    }
+
+    .btn-google-future:hover {
+      border-color: #4285f4;
+      box-shadow: 0 4px 16px rgba(66,133,244,0.15);
+    }
+
+    /* Trust line */
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    .trust-check {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(76,175,120,0.15);
+      color: #4caf78;
+      font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+
+    /* ── Hero visual (right side) ── */
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-card-main {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-main::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(240,165,0,0.15), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .hc-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .hc-logo-dot { color: var(--orange); }
+
+    .hc-member-pills {
+      display: flex;
+      gap: 6px;
+    }
+
+    .hc-pill {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      border: 2px solid var(--dark);
+    }
+
+    .hc-pill-v { background: rgba(92,158,255,0.25); color: #5c9eff; }
+    .hc-pill-p { background: rgba(76,239,136,0.25); color: #4cef88; }
+    .hc-pill-t { background: rgba(240,165,0,0.25);  color: #f0a500; }
+
+    /* Balance display in card */
+    .hc-balance {
+      background: linear-gradient(135deg, rgba(240,165,0,0.15), rgba(240,165,0,0.05));
+      border: 1px solid rgba(240,165,0,0.2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .hc-balance-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+    }
+
+    .hc-balance-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--orange);
+      letter-spacing: -1px;
+    }
+
+    /* Mini stats row */
+    .hc-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .hc-stat {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .hc-stat-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hc-stat-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 17px;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    /* Mini bar chart */
+    .hc-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 50px;
+    }
+
+    .hc-bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      background: rgba(240,165,0,0.3);
+      transition: height 0.5s ease;
+    }
+
+    .hc-bar.active { background: var(--orange); }
+
+    /* Floating cards around main card */
+    .hero-float-card {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: float 4s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    .hero-float-card.fc-1 {
+      top: -20px; right: -30px;
+      animation-delay: 0s;
+    }
+
+    .hero-float-card.fc-2 {
+      bottom: 20px; left: -40px;
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    .fc-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .fc-icon-green { background: rgba(76,175,120,0.15); }
+    .fc-icon-orange { background: rgba(240,165,0,0.15); }
+
+    /* ────────────────────────────────────
+       FEATURES / HOW IT WORKS
+    ──────────────────────────────────── */
+    .section {
+      padding: 100px 5%;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--text2);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 56px;
+    }
+
+    /* Feature cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: var(--trans);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--orange);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: transparent;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+
+    .feature-card:hover::before { transform: scaleX(1); }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      background: var(--orange-lt);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    /* ────────────────────────────────────
+       MEMBERS SECTION (dark bg)
+    ──────────────────────────────────── */
+    .members-section {
+      padding: 100px 5%;
+      background: var(--dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .members-section::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 400px;
+      background: radial-gradient(ellipse, rgba(240,165,0,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .members-section .section-title { color: #fff; }
+    .members-section .section-desc  { color: rgba(255,255,255,0.5); }
+
+    .member-cards-row {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .lp-member-card {
+      width: 260px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      transition: var(--trans);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lp-member-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .lp-member-card.mc-vijay:hover    { border-color: rgba(92,158,255,0.4);  box-shadow: 0 20px 60px rgba(92,158,255,0.15); }
+    .lp-member-card.mc-prasanna:hover { border-color: rgba(76,239,136,0.4);  box-shadow: 0 20px 60px rgba(76,239,136,0.15); }
+    .lp-member-card.mc-tharun:hover   { border-color: rgba(240,165,0,0.4);   box-shadow: 0 20px 60px rgba(240,165,0,0.15); }
+
+    .lp-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 auto 16px;
+    }
+
+    .av-vijay    { background: rgba(92,158,255,0.15); color: #5c9eff; }
+    .av-prasanna { background: rgba(76,239,136,0.15); color: #4cef88; }
+    .av-tharun   { background: rgba(240,165,0,0.15);  color: #f0a500; }
+
+    .lp-member-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .lp-member-name.n-vijay    { color: #5c9eff; }
+    .lp-member-name.n-prasanna { color: #4cef88; }
+    .lp-member-name.n-tharun   { color: #f0a500; }
+
+    .lp-member-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+
+    .lp-member-badge {
+      margin-top: 16px;
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .badge-vijay    { background: rgba(92,158,255,0.15); color: #5c9eff; }
+    .badge-prasanna { background: rgba(76,239,136,0.15); color: #4cef88; }
+    .badge-tharun   { background: rgba(240,165,0,0.15);  color: #f0a500; }
+
+    /* ────────────────────────────────────
+       STEPS / HOW IT WORKS
+    ──────────────────────────────────── */
+    .steps-section {
+      padding: 100px 5%;
+      background: var(--gray-50);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      position: relative;
+    }
+
+    /* Connecting line */
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: calc(12.5% + 28px);
+      right: calc(12.5% + 28px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--orange), rgba(240,165,0,0.2));
+    }
+
+    .step-item {
+      text-align: center;
+      position: relative;
+    }
+
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 24px rgba(240,165,0,0.35);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    /* ────────────────────────────────────
+       STATS BANNER
+    ──────────────────────────────────── */
+    .stats-banner {
+      padding: 60px 5%;
+      background: linear-gradient(135deg, var(--orange) 0%, #e8920a 100%);
+    }
+
+    .stats-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 40px;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+    }
+
+    /* ────────────────────────────────────
+       CTA SECTION
+    ──────────────────────────────────── */
+    .cta-section {
+      padding: 120px 5%;
+      text-align: center;
+      background: var(--white);
+    }
+
+    .cta-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .cta-section .section-title {
+      margin-bottom: 16px;
+    }
+
+    .cta-section .section-desc {
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ────────────────────────────────────
+       FOOTER
+    ──────────────────────────────────── */
+    .footer {
+      background: var(--dark);
+      padding: 48px 5% 32px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 24px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .footer-logo-icon {
+      width: 32px; height: 32px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .footer-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--orange); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .footer-tech {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .footer-tech span { color: var(--orange); }
+
+    /* ────────────────────────────────────
+       RESPONSIVE
+    ──────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps-grid::before { display: none; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { order: -1; }
+      .hero-circle { display: none; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: block; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 90px 5% 60px; }
+      .hero-title { font-size: 36px; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: 1fr 1fr; }
+      .hero-float-card { display: none; }
+    }
+
+    /* ────────────────────────────────────
+       SCROLL ANIMATIONS
+    ──────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <a href="/landing" class="nav-logo">
+    <div class="nav-logo-icon">◈</div>
+    <span class="nav-logo-text">Expense<span>IQ</span></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#members">Family</a></li>
+  </ul>
+
+  <div class="nav-actions">
+    <!-- Future: Google Sign-in button (uncomment when ready) -->
+    <!--
+    <button class="btn-nav-google" id="btnGoogleLogin">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    -->
+
+    <!-- Family login button — opens the family password page -->
+    <a href="/" class="btn-nav-login">
+      🔐 Family Login
+    </a>
+  </div>
+
+  <button class="nav-hamburger" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-dots"></div>
+  <div class="hero-circle"></div>
+
+  <div class="hero-inner">
+    <!-- Left: Text -->
+    <div class="hero-text">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Family Finance Tracker
+      </div>
+
+      <h1 class="hero-title">
+        Track Every<br>
+        Rupee with<br>
+        <span class="highlight">Smart IQ</span>
+      </h1>
+
+      <p class="hero-desc">
+        A shared family expense tracker where Vijay, Prasanna, and Tharun each have their own private dashboard — with real-time balance, income tracking, and beautiful analytics.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/" class="btn-hero-primary">
+          🔐 Enter Family Dashboard
+          <span>→</span>
+        </a>
+        <a href="#features" class="btn-hero-secondary">
+          See features ↓
+        </a>
+
+        <!-- Future Google button — hidden now, ready to activate -->
+        <button class="btn-google-future" id="heroGoogleBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Sign in with Google
+        </button>
+      </div>
+
+      <div class="hero-trust">
+        <div class="trust-item">
+          <div class="trust-check">✓</div>
+          <span>No credit card needed</span>
+        </div>
+        <div class="trust-item">
+          <div class="trust-check">✓</div>
+          <span>Private per member</span>
+        </div>
+        <div class="trust-item">
+          <div class="trust-check">✓</div>
+          <span>Cloud hosted</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Visual mockup -->
+    <div class="hero-visual">
+      <!-- Floating card top right -->
+      <div class="hero-float-card fc-1">
+        <div class="fc-icon fc-icon-green">✓</div>
+        <div>
+          <div style="font-size:11px;color:#888;font-weight:500">Income added</div>
+          <div style="color:#4caf78;font-family:'DM Mono',monospace">+₹25,000</div>
+        </div>
+      </div>
+
+      <!-- Main card -->
+      <div class="hero-card-main">
+        <div class="hc-header">
+          <div class="hc-logo">
+            <span class="hc-logo-dot">◈</span> ExpenseIQ
+          </div>
+          <div class="hc-member-pills">
+            <div class="hc-pill hc-pill-v">V</div>
+            <div class="hc-pill hc-pill-p">P</div>
+            <div class="hc-pill hc-pill-t">T</div>
+          </div>
+        </div>
+
+        <div class="hc-balance">
+          <div class="hc-balance-label">Total Balance</div>
+          <div class="hc-balance-value">₹73,450</div>
+        </div>
+
+        <div class="hc-stats">
+          <div class="hc-stat">
+            <div class="hc-stat-label">This Month</div>
+            <div class="hc-stat-value">₹4,280</div>
+          </div>
+          <div class="hc-stat">
+            <div class="hc-stat-label">Daily Avg</div>
+            <div class="hc-stat-value">₹428</div>
+          </div>
+        </div>
+
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em">
+          Last 7 Days
+        </div>
+        <div class="hc-bars">
+          <div class="hc-bar" style="height:30%"></div>
+          <div class="hc-bar" style="height:55%"></div>
+          <div class="hc-bar" style="height:40%"></div>
+          <div class="hc-bar" style="height:70%"></div>
+          <div class="hc-bar" style="height:45%"></div>
+          <div class="hc-bar" style="height:85%"></div>
+          <div class="hc-bar active" style="height:60%"></div>
+        </div>
+      </div>
+
+      <!-- Floating card bottom left -->
+      <div class="hero-float-card fc-2">
+        <div class="fc-icon fc-icon-orange">🍛</div>
+        <div>
+          <div style="font-size:11px;color:#888;font-weight:500">Food · Today</div>
+          <div style="color:#111;font-family:'DM Mono',monospace">₹180</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FEATURES
+══════════════════════════════════════ -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-label fade-up">Features</div>
+    <h2 class="section-title fade-up">Everything your family<br>needs to track finances</h2>
+    <p class="section-desc fade-up">Built specifically for family use — each member has their own private space, but everyone shares one easy login.</p>
+
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Real-time Balance</div>
+        <div class="feature-desc">Your balance updates instantly every time you add income or record an expense. Never lose track of what you have.</div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">👨‍👩‍👦</div>
+        <div class="feature-title">Per-Member Privacy</div>
+        <div class="feature-desc">Vijay, Prasanna, and Tharun each have completely isolated dashboards. Your data is yours alone.</div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Smart Analytics</div>
+        <div class="feature-desc">Bar charts, pie charts, monthly trends, and category breakdowns — understand your spending at a glance.</div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">📥</div>
+        <div class="feature-title">CSV Export</div>
+        <div class="feature-desc">Export your expenses or income to CSV anytime. Each member only exports their own data — private and clean.</div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Budget Alerts</div>
+        <div class="feature-desc">Set monthly limits per category. Get warned at 80% and alerted when you exceed your budget.</div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">Shared Family Login</div>
+        <div class="feature-desc">One family password for easy access. Any member can log in at any time. Change password anytime from inside.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     STATS BANNER
+══════════════════════════════════════ -->
+<div class="stats-banner">
+  <div class="stats-inner">
+    <div class="fade-up">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Family Members</div>
+    </div>
+    <div class="fade-up">
+      <div class="stat-value">8</div>
+      <div class="stat-label">Expense Categories</div>
+    </div>
+    <div class="fade-up">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">Private Per Member</div>
+    </div>
+    <div class="fade-up">
+      <div class="stat-value">∞</div>
+      <div class="stat-label">Expenses Trackable</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MEMBERS SECTION
+══════════════════════════════════════ -->
+<section class="members-section" id="members">
+  <div class="section-inner">
+    <div class="section-label fade-up" style="color:rgba(240,165,0,0.7)">Family Members</div>
+    <h2 class="section-title fade-up">Three members,<br>three private dashboards</h2>
+    <p class="section-desc fade-up">Click any member card after logging in to access their personal finance dashboard. All data is completely isolated.</p>
+
+    <div class="member-cards-row">
+      <div class="lp-member-card mc-vijay fade-up">
+        <div class="lp-avatar av-vijay">V</div>
+        <div class="lp-member-name n-vijay">Vijay</div>
+        <div class="lp-member-desc">Personal expenses, income, and balance — completely private.</div>
+        <div class="lp-member-badge badge-vijay">Blue Theme</div>
+      </div>
+      <div class="lp-member-card mc-prasanna fade-up">
+        <div class="lp-avatar av-prasanna">P</div>
+        <div class="lp-member-name n-prasanna">Prasanna</div>
+        <div class="lp-member-desc">Track every rupee in and out — separate from all other members.</div>
+        <div class="lp-member-badge badge-prasanna">Green Theme</div>
+      </div>
+      <div class="lp-member-card mc-tharun fade-up">
+        <div class="lp-avatar av-tharun">T</div>
+        <div class="lp-member-name n-tharun">Tharun</div>
+        <div class="lp-member-desc">Your own dashboard, charts, and exports — yours alone.</div>
+        <div class="lp-member-badge badge-tharun">Amber Theme</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════ -->
+<section class="steps-section" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-label fade-up">How It Works</div>
+    <h2 class="section-title fade-up">Up and running in seconds</h2>
+    <p class="section-desc fade-up" style="margin-bottom:60px">No complicated setup. Just login, pick your name, and start tracking.</p>
+
+    <div class="steps-grid">
+      <div class="step-item fade-up">
+        <div class="step-num">1</div>
+        <div class="step-title">Open the App</div>
+        <div class="step-desc">Visit the website. The landing page welcomes you with a clear login button at the top right.</div>
+      </div>
+      <div class="step-item fade-up">
+        <div class="step-num">2</div>
+        <div class="step-title">Family Login</div>
+        <div class="step-desc">Enter the shared family password. One password works for all three members — simple and easy.</div>
+      </div>
+      <div class="step-item fade-up">
+        <div class="step-num">3</div>
+        <div class="step-title">Pick Your Name</div>
+        <div class="step-desc">Choose Vijay, Prasanna, or Tharun from the family selection screen. Your private dashboard loads instantly.</div>
+      </div>
+      <div class="step-item fade-up">
+        <div class="step-num">4</div>
+        <div class="step-title">Track & Grow</div>
+        <div class="step-desc">Add income, record expenses, set budgets, and view analytics. Export your data anytime as CSV.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     CTA
+══════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="section-label fade-up" style="text-align:center">Get Started</div>
+    <h2 class="section-title fade-up" style="text-align:center">Ready to take control<br>of your finances?</h2>
+    <p class="section-desc fade-up" style="text-align:center">
+      Log in now and start tracking every rupee. Your dashboard is waiting for you.
+    </p>
+    <div class="cta-buttons fade-up">
+      <a href="/" class="btn-hero-primary">
+        🔐 Enter Family Dashboard →
+      </a>
+    </div>
+
+    <!-- Future Google auth CTA (hidden until ready) -->
+    <div id="googleCtaContainer" style="display:none; margin-top:16px; text-align:center">
+      <button class="btn-google-future" style="display:inline-flex; margin:0 auto">
+        <svg width="18" height="18" viewBox="0 0 24 24">...</svg>
+        Sign up with Google
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="/landing" class="footer-logo">
+      <div class="footer-logo-icon">◈</div>
+      <span class="footer-logo-text">ExpenseIQ</span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#members">Members</a></li>
+      <li><a href="/">Login</a></li>
+    </ul>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 ExpenseIQ Family Edition. All rights reserved.</div>
+    <div class="footer-tech">Built with <span>Flask + MySQL + Railway + Render</span></div>
+  </div>
+</footer>
+
+<script>
+  // ── Navbar scroll effect ──
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ── Scroll animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        // Stagger delay for sibling elements
+        const siblings = entry.target.parentElement.querySelectorAll('.fade-up');
+        siblings.forEach((el, idx) => {
+          if (el === entry.target) {
+            setTimeout(() => el.classList.add('visible'), idx * 80);
+          }
+        });
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── Mobile nav toggle ──
+  function toggleMobileMenu() {
+    const links = document.querySelector('.nav-links');
+    if (links.style.display === 'flex') {
+      links.style.display = 'none';
+    } else {
+      links.style.cssText = `
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 68px; left: 0; right: 0;
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(16px);
+        padding: 24px 5%;
+        gap: 20px;
+        border-bottom: 1px solid #ebebeb;
+        z-index: 99;
+      `;
+    }
+  }
+
+  /* ──────────────────────────────────────────
+     FUTURE GOOGLE AUTH INTEGRATION
+     When you're ready to add Google OAuth:
+
+     1. Add Google OAuth credentials to your Flask app
+     2. Install flask-dance or authlib:
+        pip install authlib flask
+
+     3. In app.py, add:
+        from authlib.integrations.flask_client import OAuth
+        oauth = OAuth(app)
+        google = oauth.register(
+          name='google',
+          client_id=os.getenv('GOOGLE_CLIENT_ID'),
+          client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+          server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+          client_kwargs={'scope': 'openid email profile'}
+        )
+
+     4. Add routes:
+        @app.route('/google-login')
+        def google_login():
+          redirect_uri = url_for('google_callback', _external=True)
+          return google.authorize_redirect(redirect_uri)
+
+        @app.route('/google-callback')
+        def google_callback():
+          token = google.authorize_access_token()
+          userinfo = token['userinfo']
+          # match userinfo['email'] to a family member
+          # set session['member'] and session['family_auth']
+          return redirect(url_for('family_home'))
+
+     5. Uncomment the Google buttons in this page and login.html
+     ────────────────────────────────────────── */
+</script>
+</body>
+</html>
