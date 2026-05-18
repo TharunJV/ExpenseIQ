@@ -293,6 +293,11 @@ def get_member_or_400():
 # PAGES
 # ─────────────────────────────────────────
 
+@app.route("/landing")
+def landing_page():
+    """Public landing page — no auth required."""
+    return render_template("landing.html")
+
 @app.route("/")
 def login_page():
     """
