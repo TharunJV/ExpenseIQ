@@ -77,15 +77,15 @@
       background: var(--orange);
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
+      font-size: 22px;
       color: #fff;
       font-weight: 800;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Manrope', sans-serif;
     }
 
     .nav-logo-text {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 35px;
       font-weight: 800;
       letter-spacing: -0.5px;
       color: var(--text);
@@ -123,7 +123,7 @@
       gap: 8px;
       background: var(--orange);
       color: #fff;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Manrope', sans-serif;
       font-size: 14px;
       font-weight: 700;
       padding: 9px 22px;
@@ -249,7 +249,7 @@
     }
 
     .hero-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Poppins', sans-serif;
       font-size: clamp(40px, 5vw, 68px);
       font-weight: 800;
       letter-spacing: -2.5px;
@@ -414,7 +414,7 @@
     }
 
     .hc-logo {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Manrope', sans-serif;
       font-size: 14px;
       font-weight: 800;
       color: #fff;
@@ -577,8 +577,8 @@
     }
 
     .section-title {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(28px, 3.5vw, 44px);
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(38px, 3.5vw, 44px);
       font-weight: 800;
       letter-spacing: -1.5px;
       color: var(--text);
@@ -640,7 +640,7 @@
     }
 
     .feature-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Georgia', sans-serif;
       font-size: 17px;
       font-weight: 700;
       color: var(--text);
@@ -656,6 +656,7 @@
     /* ────────────────────────────────────
        MEMBERS SECTION (dark bg)
     ──────────────────────────────────── */
+    /*
     .members-section {
       padding: 100px 5%;
       background: var(--dark);
@@ -748,7 +749,7 @@
     .badge-vijay    { background: rgba(92,158,255,0.15); color: #5c9eff; }
     .badge-prasanna { background: rgba(76,239,136,0.15); color: #4cef88; }
     .badge-tharun   { background: rgba(240,165,0,0.15);  color: #f0a500; }
-
+      */
     /* ────────────────────────────────────
        STEPS / HOW IT WORKS
     ──────────────────────────────────── */
@@ -785,7 +786,7 @@
       border-radius: 50%;
       background: var(--orange);
       color: #fff;
-      font-family: 'Syne', sans-serif;
+      font-family: 'IBM Plex Sans ', sans-serif;
       font-size: 20px;
       font-weight: 800;
       display: flex; align-items: center; justify-content: center;
@@ -905,14 +906,14 @@
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       font-family: 'Syne', sans-serif;
-      font-size: 16px;
+      font-size: 22px;
       font-weight: 800;
       color: #fff;
     }
 
     .footer-logo-text {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
       font-weight: 800;
       color: #fff;
     }
@@ -1011,7 +1012,9 @@
   <ul class="nav-links">
     <li><a href="#features">Features</a></li>
     <li><a href="#how-it-works">How it works</a></li>
-    <li><a href="#members">Family</a></li>
+
+    <!-- <li><a href="#members">Family</a></li> -->
+
   </ul>
 
   <div class="nav-actions">
@@ -1025,7 +1028,7 @@
 
     <!-- Family login button — opens the family password page -->
     <a href="/login" class="btn-nav-login">
-      🔐 Family Login
+       Family Login
     </a>
   </div>
 
@@ -1058,8 +1061,8 @@
       </p>
 
       <div class="hero-actions">
-        <a href="/" class="btn-hero-primary">
-          🔐 Enter Family Dashboard
+        <a href="/login" class="btn-hero-primary">
+           Enter Family Dashboard
           <span>→</span>
         </a>
         <a href="#features" class="btn-hero-secondary">
@@ -1226,6 +1229,7 @@
 <!-- ══════════════════════════════════════
      MEMBERS SECTION
 ══════════════════════════════════════ -->
+<!--
 <section class="members-section" id="members">
   <div class="section-inner">
     <div class="section-label fade-up" style="color:rgba(240,165,0,0.7)">Family Members</div>
@@ -1254,7 +1258,7 @@
     </div>
   </div>
 </section>
-
+-->
 <!-- ══════════════════════════════════════
      HOW IT WORKS
 ══════════════════════════════════════ -->
@@ -1301,7 +1305,7 @@
     </p>
     <div class="cta-buttons fade-up">
       <a href="/login" class="btn-hero-primary">
-        🔐 Enter Family Dashboard →
+         Enter Family Dashboard →
       </a>
     </div>
 
@@ -1327,13 +1331,17 @@
     <ul class="footer-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#how-it-works">How it works</a></li>
-      <li><a href="#members">Members</a></li>
+      
+      <!-- <li><a href="#members">Members</a></li> -->
+      
       <li><a href="/login">Login</a></li>
     </ul>
   </div>
   <div class="footer-bottom">
     <div class="footer-copy">© 2026 ExpenseIQ Family Edition. All rights reserved.</div>
+    <!--
     <div class="footer-tech">Built with <span>Flask + MySQL + Railway + Render</span></div>
+    -->
   </div>
 </footer>
 
