@@ -113,10 +113,10 @@
 
     /* Heading */
     .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.8px;
+      
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
       margin-bottom: 6px;
       text-align: center;
     }
@@ -286,6 +286,17 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .go-landing {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
     /* Member avatars row (decorative) */
     .members-row {
       display: flex;
@@ -384,6 +395,7 @@
     <span class="btn-text" id="btnText">Enter Family Dashboard →</span>
     <div class="btn-spinner" id="btnSpinner"></div>
   </button>
+  <a href = "landing.html" class="go-landing" >Back to Home</a>
 
 </div>
 
