@@ -28,7 +28,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       position: relative;
     }
 
@@ -265,10 +266,14 @@
 
     /* Responsive */
     @media (max-width: 680px) {
+      body { justify-content: flex-start; }
       .members-grid { flex-direction: column; align-items: center; }
       .member-card  { width: min(280px, 90vw); }
       .header h1    { font-size: 36px; }
       .header       { margin-bottom: 40px; }
+      /* Make room for the fixed footer on small screens */
+      .page-footer  { position: fixed; }
+      body { padding-bottom: 88px; }
     }
   </style>
 </head>
